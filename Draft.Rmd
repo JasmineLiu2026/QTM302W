@@ -22,8 +22,12 @@ library(GGally)
 
 # Combining files together (all csv has the exact same data structure, varied by year)
 ```{r message=FALSE, warning=FALSE}
-files <- list.files("data", pattern = "\\.csv$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE)
+files <- list.files("data", pattern = "\\.csv$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE) %>% discard(~ grepl("codebook", .x, ignore.case = TRUE))
+files
+```
 
+
+```{r message=FALSE, warning=FALSE}
 lung_cancer_df <- files %>%
   map_dfr(read_csv) %>%
   clean_names()

@@ -94,4 +94,29 @@ Throughout the period, males experienced higher mortality rates than females, bu
 
 
 
+```{r}
+age_trend <- lung_cancer_df %>%
+  group_by(year, age_name) %>%
+  summarize(
+    mean_rate = mean(val, na.rm = TRUE),
+    .groups   = "drop"
+  )
+
+ggplot(age_trend, aes(x = year, y = mean_rate, color = age_name)) +
+  geom_line() +
+  labs(
+    title = "Lung Cancer Mortality Rate by Age Group (2000–2019)",
+    x     = "Year",
+    y     = "Age‑adjusted deaths per 100,000",
+    color = "Age Group"
+  ) +
+  theme(legend.position = "bottom")
+
+
+```
+
+Draws one line per age bracket showing its annual mean rate.
+And it reveals which cohorts experience the highest rates and how they’re changing over time.
+
+
 

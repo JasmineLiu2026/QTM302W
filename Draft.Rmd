@@ -8,6 +8,10 @@ output: html_notebook
 Team Member: Jasmine, Vasant, Cheng Lang
 
 This notebook performs an exploratory data analysis (EDA) on lung cancer incidence data in the United States, covering years 2000 to 2019.  
+The lung cancer mortality data were downloaded from the CDC WONDER portal, covering all 50 U.S. states plus DC for the years 2000–2019. “Mortality rate” refers to the age-adjusted number of deaths per 100,000 residents. Exploring these data can reveal:
+1.How has the national rate changed over time?  
+2.Do males and females follow the same pattern?  
+3.Which states experienced the highest mortality in 2019?
 The data comes from multiple CSV files where we combined and cleaned for analysis.  
 We will explore the structure of the data set, clean the data, and visualize some key variables to understand the trends and distributions when applicable.
 
@@ -18,6 +22,7 @@ library(tidyverse)
 library(janitor)
 library(skimr)
 library(GGally)
+
 ```
 
 # Combining files together (all csv has the exact same data structure, varied by year)
@@ -53,8 +58,39 @@ skim(codebook)
 ```{r}
 unique(lung_cancer_df$metric_name) # Mortality rate is the only measure here
 ```
+```{r}
+nat_trend <- lung_cancer_df %>%
+  group_by(year) %>%
+  summarize(mean_rate = mean(val, na.rm = TRUE))
 
+ggplot(nat_trend, aes(x = year, y = mean_rate)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "US Lung Cancer Mortality Rate (2000–2019)",
+    x     = "Year",
+    y     = "Age‑adjusted deaths per 100,000"
+  )
 
+```
+ From 2000 to 2019, the national lung cancer mortality rate declined from approximately XX to YY per 100,000, suggesting improvements in detection and treatment.
+```{r}
+sex_trend <- lung_cancer_df %>%
+  group_by(year, sex_name) %>%
+  summarize(rate = mean(val, na.rm = TRUE))
+
+ggplot(sex_trend, aes(x = year, y = rate, color = sex_name)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Lung Cancer Mortality Rate by Sex",
+    x     = "Year",
+    y     = "Age‑adjusted deaths per 100,000",
+    color = "Sex"
+  )
+
+```
+Throughout the period, males experienced higher mortality rates than females, but both sexes show a clear downward trend.
 
 
 

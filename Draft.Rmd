@@ -1,0 +1,57 @@
+---
+title: "Lung Cancer Data Exploratory Analysis"
+output: html_notebook
+---
+
+# Introduction
+
+Team Member: Jasmine, Vasant, Cheng Lang
+
+This notebook performs an exploratory data analysis (EDA) on lung cancer incidence data in the United States, covering years 2000 to 2019.  
+The data comes from multiple CSV files where we combined and cleaned for analysis.  
+We will explore the structure of the data set, clean the data, and visualize some key variables to understand the trends and distributions when applicable.
+
+# Package Set Up
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(GGally)
+```
+
+# Combining files together (all csv has the exact same data structure, varied by year)
+```{r message=FALSE, warning=FALSE}
+files <- list.files("data", pattern = "\\.csv$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE)
+
+lung_cancer_df <- files %>%
+  map_dfr(read_csv) %>%
+  clean_names()
+```
+
+```{r}
+glimpse(lung_cancer_df)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+colSums(is.na(lung_cancer_df))
+```
+```{r}
+skim(lung_cancer_df)
+```
+
+```{r}
+codebook <- read_csv("data/codebook.csv")
+glimpse(codebook)
+skim(codebook)
+```
+```{r}
+unique(lung_cancer_df$metric_name) # Mortality rate is the only measure here
+```
+
+
+
+
+
+

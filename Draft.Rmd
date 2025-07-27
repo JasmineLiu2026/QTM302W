@@ -172,6 +172,7 @@ ggplot(age_trend, aes(x = year, y = mean_rate, color = age_group)) +
 
 
 ```
+
 Older groups show much higher mortality, exceeding 400 deaths per 100,000. Younger age groups (<50 years) maintain low and nearly flat rates, indicating that lung cancer remains predominantly an illness affecting older adults. The decline in older age groups suggests improvements in screening and treatment for seniors, as well as the cumulative effect of reduced smoking over time.
 
 ## 4. State_Level Mortality During Two Decades
@@ -261,7 +262,8 @@ ggplot(state_2019, aes(x = reorder(state, rate), y = rate)) +
     y = "Deaths per 100,000"
   )
 ```
-  Kentucky, West Virginia, Maine ,and Mississippi are among the states with the highest mortality rates (>120 deaths per 100,000). These states historically have high smoking prevalence and potentially limited access to healthcare. Utah and Colorado show the lowest rates, likely due to lower smoking rates and stronger public health measures. The sharp contrast between states underscores the impact of local health policies and cultural habits.
+
+Kentucky, West Virginia, Maine ,and Mississippi are among the states with the highest mortality rates (>120 deaths per 100,000). These states historically have high smoking prevalence and potentially limited access to healthcare. Utah and Colorado show the lowest rates, likely due to lower smoking rates and stronger public health measures. The sharp contrast between states underscores the impact of local health policies and cultural habits.
 
 
 
@@ -286,6 +288,7 @@ ggplot(race_trend, aes(x = year, y = mean_rate, color = race)) +
     axis.title = element_text(size = 12)
   )
 ```
+
 American Indian and Alaska Native groups have the highest lung cancer mortality rates, which increased between 2000 and 2005 before declining. Black populations started with the highest rate in 2000 but achieved significant reductions, approaching parity with other races by 2019. Asian populations show relatively stable, low mortality, possibly due to lower historical smoking prevalence.
 
 

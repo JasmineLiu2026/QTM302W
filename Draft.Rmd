@@ -1,22 +1,53 @@
 ---
 title: "Lung Cancer Data Exploratory Analysis"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 # Introduction
 
-Team Member: Jasmine, Vasant, Cheng Lang
+**Team Members**: Jasmine, Vasant, Cheng Lang
 
-This notebook performs an exploratory data analysis (EDA) on lung cancer incidence data in the United States, covering years 2000 to 2019.  
-The lung cancer mortality data were downloaded from the CDC WONDER portal, covering all 50 U.S. states plus DC for the years 2000–2019. “Mortality rate” refers to the age-adjusted number of deaths per 100,000 residents. Exploring these data can reveal:
-1.How has the national rate changed over time?  
-2.Do males and females follow the same pattern?  
-3.Which states experienced the highest mortality in 2019?
-The data comes from multiple CSV files where we combined and cleaned for analysis.  
-We will explore the structure of the data set, clean the data, and visualize some key variables to understand the trends and distributions when applicable.
+This notebook performs an exploratory data analysis (EDA) on lung cancer incidence data in the United States, covering the years **2000 to 2019**.  
+The lung cancer mortality data were downloaded from **https://ghdx.healthdata.org/record/ihme-data/us-lung-cancer-county-race-ethnicity-2000-2019**, including all 50 U.S. states plus DC. “Mortality rate” refers to the age-adjusted number of deaths per 100,000 residents; these estimates were generated using population and deaths data from teh National Center for Health Statistics.
+
+This analysis addresses the following questions:
+
+1. Describe **temporal trends** in lung cancer mortality nationally.
+2. Examine **demographic disparities** across **sex**, **age**, and **race**.
+3. Identify **geographic variation** in lung cancer outcomes by **state**.
+
+The data were sourced from multiple CSV files. After combining and cleaning them, we analyze the structure, summarize key variables, and visualize trends.
+
+### Variable Descriptions
+
+| **Variable Name** | **Description** |
+|-------------------|-----------------|
+| `year`            | Calendar year of the observation (2000–2019). |
+| `state`        | U.S. state or jurisdiction where the mortality rate was recorded. |
+| `sex`             | Biological sex of the population group (`Male`, `Female`). |
+| `age_group`       | Age group category (e.g., `15–49 years`, `65+ years`). |
+| `race`            | Racial or ethnic group (e.g., `White`, `Black or African American`). |
+| `metric`          | Type of metric used for the mortality estimate. |
+| `value`           | Age-adjusted lung cancer mortality rate (deaths per 100,000 population). |
+| `lower_ci`        | Lower bound of the 95% confidence interval for the mortality rate. |
+| `upper_ci`        | Upper bound of the 95% confidence interval for the mortality rate. |
+
+### Research Interest
+
+Our project focuses on trends in **lung cancer mortality** in the United States between **2000 and 2019**, with particular attention to **demographic disparities** and **state-level variation**. We use data from the **Institute for Health Metrics and Evaluation (IHME)**, which compiles cause-specific mortality estimates derived from population data and death certificates provided by the **National Center for Health Statistics (NCHS)**. These rates are **age-adjusted per 100,000 people**, allowing for meaningful comparisons over time and across population groups.
+
+We chose to study lung cancer for the following reaons:
+
+- **Leading cause of cancer death**: Lung cancer remains the most deadly form of cancer in the U.S., surpassing deaths from breast, prostate, and colorectal cancers combined.
+- **Strong behavioral and environmental links**: Smoking remains the primary risk factor, but disparities in access to care, exposure to pollutants, and occupational risks also play a role.
+- **Clear patterns across states and subgroups**: Lung cancer mortality shows variation by **sex**, **age**, **race/ethnicity**, and **geography**, making it a useful case for studying public health inequality and policy impacts.
+
+Our research aims to understand how lung cancer mortality has changed over two decades and to identify the **subpopulations or regions most at risk**. In doing so, we hope to inform future public health strategies aimed at **reducing preventable deaths**, particularly in states or demographic groups that have not benefited equally from smoking cessation campaigns, early detection, or advances in treatment.
+
 
 # Package Set Up
-
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(janitor)
@@ -25,89 +56,112 @@ library(GGally)
 
 ```
 
-# Combining files together (all csv has the exact same data structure, varied by year)
+# Data Preprocessing
 ```{r message=FALSE, warning=FALSE}
-files <- list.files("data", pattern = "\\.csv$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE) %>% discard(~ grepl("codebook", .x, ignore.case = TRUE))
-files
+# Combining all yearly CSV files together (all csv file have the exact same data structure, varied by year)
+male_files <- list.files("data/male", pattern = "\\.csv$", full.names = TRUE, ignore.case = TRUE)
+female_files <- list.files("data/female", pattern = "\\.csv$", full.names = TRUE, ignore.case = TRUE)
+
+male_data <- male_files %>%
+  map_dfr(~ read_csv(.x) %>% clean_names()) %>%
+  mutate(sex_name = "Male")
+
+female_data <- female_files %>%
+  map_dfr(~ read_csv(.x) %>% clean_names()) %>%
+  mutate(sex_name = "Female")
+
+lung_cancer_df <- bind_rows(male_data, female_data)
 ```
 
-
-```{r message=FALSE, warning=FALSE}
-lung_cancer_df <- files %>%
-  map_dfr(read_csv) %>%
-  clean_names()
-```
-
+# Quick Overview
 ```{r}
 glimpse(lung_cancer_df)
 ```
 
+```{r}
+# Clean and Structure Data
+lung_clean <- lung_cancer_df %>%
+  mutate(
+    state = str_extract(location_name, "(?<=\\().+?(?=\\))"),
+    state = if_else(is.na(state), location_name, state),
+    
+    # Normalize death rate per 100,000 population
+    mortality_rate = val * 100000,
+    lower_ci = lower * 100000,
+    upper_ci = upper * 100000
+  ) %>%
+  select(
+    year,
+    state,
+    sex = sex_name,
+    age_group = age_name,
+    race = race_name,
+    mortality_rate,
+    lower_ci,
+    upper_ci
+  ) %>%
+  filter(!is.na(mortality_rate), state != "United States of America")
 
-```{r message=FALSE, warning=FALSE}
-colSums(is.na(lung_cancer_df))
-```
-```{r}
-skim(lung_cancer_df)
+# Missing Values Check
+colSums(is.na(lung_clean))
 ```
 
 ```{r}
-codebook <- read_csv("data/codebook.csv")
-glimpse(codebook)
-skim(codebook)
+# Preview of Cleaned Data
+glimpse(lung_clean)
 ```
+
+# National Trends Over Time
+## 1. Overall Mortality Rate (2000-2019)
 ```{r}
-unique(lung_cancer_df$metric_name) # Mortality rate is the only measure here
-```
-```{r}
-nat_trend <- lung_cancer_df %>%
+nat_trend <- lung_clean %>%
   group_by(year) %>%
-  summarize(mean_rate = mean(val, na.rm = TRUE))
+  summarize(mean_rate = mean(mortality_rate, na.rm = TRUE))
 
 ggplot(nat_trend, aes(x = year, y = mean_rate)) +
-  geom_line() +
-  geom_point() +
+  geom_line(color = "steelblue") +
+  geom_point(color = "darkred") +
   labs(
-    title = "US Lung Cancer Mortality Rate (2000–2019)",
-    x     = "Year",
-    y     = "Age‑adjusted deaths per 100,000"
+    title = "National Lung Cancer Mortality Rate (2000–2019)",
+    x = "Year",
+    y = "Deaths per 100,000 (Age-adjusted)"
   )
 
 ```
- From 2000 to 2019, the national lung cancer mortality rate declined from approximately XX to YY per 100,000, suggesting improvements in detection and treatment.
-```{r}
-sex_trend <- lung_cancer_df %>%
-  group_by(year, sex_name) %>%
-  summarize(rate = mean(val, na.rm = TRUE))
+ From 2000 to 2019, the average national lung cancer mortality rate declined steadily, reflecting progress in smoking reduction, screening, and treatment.
 
-ggplot(sex_trend, aes(x = year, y = rate, color = sex_name)) +
-  geom_line() +
+## 2. Mortality Trends By Sex
+```{r}
+sex_trend <- lung_clean %>%
+  group_by(year, sex) %>%
+  summarize(rate = mean(mortality_rate, na.rm = TRUE))
+
+ggplot(sex_trend, aes(x = year, y = rate, color = sex)) +
+  geom_line(size = 1) +
   geom_point() +
   labs(
-    title = "Lung Cancer Mortality Rate by Sex",
-    x     = "Year",
-    y     = "Age‑adjusted deaths per 100,000",
+    title = "Lung Cancer Mortality by Sex (2000–2019)",
+    x = "Year",
+    y = "Deaths per 100,000",
     color = "Sex"
   )
 
 ```
-Throughout the period, males experienced higher mortality rates than females, but both sexes show a clear downward trend.
+  Throughout the period, males consistently experienced higher lung cancer mortality rates than females. Interestingly, the female mortality trend exhibits a concave downward pattern, peaking between 2005 and 2010, followed by a steady decline thereafter.
 
 
-
+## 3. Mortality Trends By Age Group
 ```{r}
-age_trend <- lung_cancer_df %>%
-  group_by(year, age_name) %>%
-  summarize(
-    mean_rate = mean(val, na.rm = TRUE),
-    .groups   = "drop"
-  )
+age_trend <- lung_clean %>%
+  group_by(year, age_group) %>%
+  summarize(mean_rate = mean(mortality_rate, na.rm = TRUE), .groups = "drop")
 
-ggplot(age_trend, aes(x = year, y = mean_rate, color = age_name)) +
+ggplot(age_trend, aes(x = year, y = mean_rate, color = age_group)) +
   geom_line() +
   labs(
-    title = "Lung Cancer Mortality Rate by Age Group (2000–2019)",
-    x     = "Year",
-    y     = "Age‑adjusted deaths per 100,000",
+    title = "Lung Cancer Mortality by Age Group",
+    x = "Year",
+    y = "Deaths per 100,000",
     color = "Age Group"
   ) +
   theme(legend.position = "bottom")
@@ -115,8 +169,62 @@ ggplot(age_trend, aes(x = year, y = mean_rate, color = age_name)) +
 
 ```
 
-Draws one line per age bracket showing its annual mean rate.
-And it reveals which cohorts experience the highest rates and how they’re changing over time.
+## 4. State_Level Mortality in 2019
 
+```{r}
+state_2019 <- lung_clean %>%
+  filter(year == 2000) %>%
+  group_by(state) %>%
+  summarize(rate = mean(mortality_rate, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(rate))
 
+ggplot(state_2019, aes(x = reorder(state, rate), y = rate)) +
+  geom_col(fill = "firebrick") +
+  coord_flip() +
+  labs(
+    title = "Lung Cancer Mortality by State (2019)",
+    x = "State",
+    y = "Deaths per 100,000"
+  )
+```
+  Kentucky exhibits the highest lung cancer mortality rate among all states in 2019, highlighting potential regional risk factors or disparities in healthcare access in this state.
+  
+```{r}
+state_2019 <- lung_clean %>%
+  filter(year == 2010) %>%
+  group_by(state) %>%
+  summarize(rate = mean(mortality_rate, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(rate))
 
+ggplot(state_2019, aes(x = reorder(state, rate), y = rate)) +
+  geom_col(fill = "firebrick") +
+  coord_flip() +
+  labs(
+    title = "Lung Cancer Mortality by State (2019)",
+    x = "State",
+    y = "Deaths per 100,000"
+  )
+```
+  In both 2000 and 2019, Kentucky consistently had the highest lung cancer mortality rate, while Utah maintained the lowest rate across both years.
+```{r}
+race_trend <- lung_clean %>%
+  filter(!is.na(race), race != "All Races") %>%
+  group_by(year, race) %>%
+  summarize(mean_rate = mean(mortality_rate, na.rm = TRUE), .groups = "drop")
+
+ggplot(race_trend, aes(x = year, y = mean_rate, color = race)) +
+  geom_line(size = 1.2) +
+  labs(
+    title = "Lung Cancer Mortality Trends by Race Group",
+    x = "Year",
+    y = "Deaths per 100,000",
+    color = "Race Group"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", size = 14),
+    axis.title = element_text(size = 12)
+  )
+```
+  While all race groups exhibited a downward trend in lung cancer mortality over the study period, the Asian population in particular showed a relatively stagnant rate between 2000 and 2015. The American Indian and Alaska Native (AIAN) group experienced an increase in mortality rates from 2000 to 2005, followed by a steady decline; however, they consistently maintained the highest mortality rate among all race groups from 2005 to 2019. The Black population started with the highest mortality rate in 2000 but demonstrated the greatest improvement, with a consistent decrease throughout the period.

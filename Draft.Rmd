@@ -7,7 +7,7 @@ output:
 
 # Introduction
 
-**Team Members**: Jasmine, Vasant, Cheng Lang
+**Team Members**: Jasmine, Vasant, Chenglang
 
 This notebook performs an exploratory data analysis (EDA) on lung cancer incidence data in the United States, covering the years **2000 to 2019**.  
 The lung cancer mortality data were downloaded from **https://ghdx.healthdata.org/record/ihme-data/us-lung-cancer-county-race-ethnicity-2000-2019**, including all 50 U.S. states plus DC. “Mortality rate” refers to the age-adjusted number of deaths per 100,000 residents; these estimates were generated using population and deaths data from teh National Center for Health Statistics.
@@ -104,6 +104,7 @@ lung_clean <- lung_cancer_df %>%
 
 # Missing Values Check
 colSums(is.na(lung_clean))
+unique(lung_clean$state)
 ```
 
 ```{r}
@@ -231,5 +232,102 @@ ggplot(race_trend, aes(x = year, y = mean_rate, color = race)) +
     axis.title = element_text(size = 12)
   )
 ```
-  
+
+
+```{r}
+library(usmap)
+state_rates_2010 <- lung_clean %>%
+  filter(year == 2010) %>%
+  group_by(state) %>%
+  summarize(rate = mean(mortality_rate, na.rm = TRUE))
+
+plot_usmap(data = state_rates_2010, values = "rate", color = "white") +
+  scale_fill_continuous(
+    name = "Deaths per 100k",
+    low = "lightyellow", high = "firebrick"
+  ) +
+  labs(title = "Lung Cancer Mortality by State (2010)")
+```
+
+
+```{r}
+library(usmap)
+library(ggplot2)
+# Make a copy first
+lung_clean <- lung_clean %>%
+  mutate(state_abbr = state.abb[match(state, state.name)])
+
+# Check what we got
+table(is.na(lung_clean$state_abbr))  # Should show mostly FALSE
+unique(lung_clean$state_abbr)
+
+prep_map_data <- function(year) {
+  lung_clean %>%
+    filter(year == year, !is.na(state_abbr)) %>%
+    group_by(state = state_abbr) %>%
+    summarize(rate = mean(mortality_rate, na.rm = TRUE))
+}
+
+data_2000 <- prep_map_data(2000)
+data_2019 <- prep_map_data(2019)
+
+plot_2000 <- plot_usmap(data = data_2000, values = "rate", color = "white") +
+  scale_fill_continuous(low = "lightyellow", high = "firebrick", name = "Deaths per 100k") +
+  labs(title = "Lung Cancer Mortality by State (2000)")
+
+plot_2019 <- plot_usmap(data = data_2019, values = "rate", color = "white") +
+  scale_fill_continuous(low = "lightyellow", high = "firebrick", name = "Deaths per 100k") +
+  labs(title = "Lung Cancer Mortality by State (2019)")
+
+library(patchwork)
+plot_2000 + plot_2019
+
+```
+
+
+```{r create-animation, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(maps)
+library(gganimate)
+
+# Get US state map
+us_states <- map_data("state")
+
+# Prep lung data for animation (convert state names to lowercase and match map regions)
+valid_states <- unique(us_states$region)
+
+lung_anim <- lung_clean %>%
+  mutate(state_lower = tolower(state)) %>%
+  filter(state_lower %in% valid_states) %>%
+  group_by(year, state_lower) %>%
+  summarize(rate = mean(mortality_rate, na.rm = TRUE), .groups = "drop")
+
+# Join lung data with map data
+map_data_yearly <- left_join(us_states, lung_anim, by = c("region" = "state_lower"))
+
+# Create animated plot
+p <- ggplot(map_data_yearly, aes(x = long, y = lat, group = group, fill = rate)) +
+  geom_polygon(color = "white") +
+  coord_fixed(1.3) +
+  scale_fill_viridis_c(name = "Mortality Rate") +
+  theme_minimal() +
+  labs(
+    title = "Lung Cancer Mortality Rate by State",
+    subtitle = "Year: {frame_time}",
+    x = NULL, y = NULL
+  ) +
+  transition_time(year) +
+  ease_aes('linear')
+
+# Render and save the animation in one step
+gganimate::anim_save(
+  "lung_mortality.gif",
+  animation = gganimate::animate(p, nframes = 100, fps = 5, width = 800, height = 500)
+)
+
+
+install(gifski)
+
+```
+  ![](lung_mortality.gif)
   While all race groups exhibited a downward trend in lung cancer mortality over the study period, the Asian population in particular showed a relatively stagnant rate between 2000 and 2015. The American Indian and Alaska Native (AIAN) group experienced an increase in mortality rates from 2000 to 2005, followed by a steady decline; however, they consistently maintained the highest mortality rate among all race groups from 2005 to 2019. The Black population started with the highest mortality rate in 2000 but demonstrated the greatest improvement, with a consistent decrease throughout the period.

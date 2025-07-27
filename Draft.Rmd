@@ -136,10 +136,10 @@ ggplot(nat_trend, aes(x = year, y = mean_rate)) +
 ```{r}
 sex_trend <- lung_clean %>%
   group_by(year, sex) %>%
-  summarize(rate = mean(mortality_rate, na.rm = TRUE))
+  summarize(rate = mean(mortality_rate, na.rm = TRUE), .groups = "drop")
 
 ggplot(sex_trend, aes(x = year, y = rate, color = sex)) +
-  geom_line(size = 1) +
+  geom_line(linewidth = 1) +
   geom_point() +
   labs(
     title = "Lung Cancer Mortality by Sex (2000–2019)",
@@ -147,6 +147,7 @@ ggplot(sex_trend, aes(x = year, y = rate, color = sex)) +
     y = "Deaths per 100,000",
     color = "Sex"
   )
+
 
 ```
   

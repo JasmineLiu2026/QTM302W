@@ -128,6 +128,7 @@ ggplot(nat_trend, aes(x = year, y = mean_rate)) +
   )
 
 ```
+ 
  From 2000 to 2019, the average national lung cancer mortality rate declined steadily, reflecting progress in smoking reduction, screening, and treatment.
 
 ## 2. Mortality Trends By Sex
@@ -147,6 +148,7 @@ ggplot(sex_trend, aes(x = year, y = rate, color = sex)) +
   )
 
 ```
+  
   Throughout the period, males consistently experienced higher lung cancer mortality rates than females. Interestingly, the female mortality trend exhibits a concave downward pattern, peaking between 2005 and 2010, followed by a steady decline thereafter.
 
 
@@ -187,6 +189,7 @@ ggplot(state_2019, aes(x = reorder(state, rate), y = rate)) +
     y = "Deaths per 100,000"
   )
 ```
+  
   Kentucky exhibits the highest lung cancer mortality rate among all states in 2019, highlighting potential regional risk factors or disparities in healthcare access in this state.
   
 ```{r}
@@ -205,6 +208,7 @@ ggplot(state_2019, aes(x = reorder(state, rate), y = rate)) +
     y = "Deaths per 100,000"
   )
 ```
+  
   In both 2000 and 2019, Kentucky consistently had the highest lung cancer mortality rate, while Utah maintained the lowest rate across both years.
 ```{r}
 race_trend <- lung_clean %>%
@@ -227,4 +231,5 @@ ggplot(race_trend, aes(x = year, y = mean_rate, color = race)) +
     axis.title = element_text(size = 12)
   )
 ```
+  
   While all race groups exhibited a downward trend in lung cancer mortality over the study period, the Asian population in particular showed a relatively stagnant rate between 2000 and 2015. The American Indian and Alaska Native (AIAN) group experienced an increase in mortality rates from 2000 to 2005, followed by a steady decline; however, they consistently maintained the highest mortality rate among all race groups from 2005 to 2019. The Black population started with the highest mortality rate in 2000 but demonstrated the greatest improvement, with a consistent decrease throughout the period.

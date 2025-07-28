@@ -119,4 +119,3 @@ Draws one line per age bracket showing its annual mean rate.
 And it reveals which cohorts experience the highest rates and how they’re changing over time.
 
 
-

@@ -10,7 +10,7 @@ output:
 **Team Members**: Jasmine, Vasant, Chenglang
 
 This notebook performs an exploratory data analysis (EDA) on lung cancer incidence data in the United States, covering the years **2000 to 2019**.  
-The lung cancer mortality data were downloaded from **https://ghdx.healthdata.org/record/ihme-data/us-lung-cancer-county-race-ethnicity-2000-2019**, including all 50 U.S. states plus DC. “Mortality rate” refers to the age-adjusted number of deaths per 100,000 residents; these estimates were generated using population and deaths data from teh National Center for Health Statistics.
+The lung cancer mortality data were downloaded from **https://ghdx.healthdata.org/record/ihme-data/us-lung-cancer-county-race-ethnicity-2000-2019**, including all 50 U.S. states plus DC. “Mortality rate” refers to the age-adjusted number of deaths per 100,000 residents; these estimates were generated using population and deaths data from the National Center for Health Statistics.
 
 This analysis addresses the following questions:
 
@@ -74,9 +74,13 @@ lung_cancer_df <- bind_rows(male_data, female_data)
 ```
 
 # Quick Overview
+
 ```{r}
 glimpse(lung_cancer_df)
 ```
+The raw dataset contains over 16 million rows and 19 columns, indicating a highly detailed breakdown by sex, race, age, and geography over time. Most columns like sex_name, race_name, age_name, and location_name will need cleaning or renaming for easier analysis. Additionally, the mortality rates are stored under val, with corresponding confidence intervals in lower and upper.
+
+## Clean and Structure Data
 
 ```{r}
 # Clean and Structure Data
@@ -107,13 +111,18 @@ colSums(is.na(lung_clean))
 unique(lung_clean$state)
 ```
 
+This section cleans and structures the dataset for analysis. The code extracts proper state names, renames variables for clarity, and creates normalized mortality rates per 100,000 residents. It also filters out national-level data to focus on state-level variation. Checking for missing values and verifying state names ensures the dataset is ready for accurate visualizations and statistical summaries.
+
+
 ```{r}
 # Preview of Cleaned Data
 glimpse(lung_clean)
 ```
+After cleaning, the dataset contains approximately **9 million rows** and **8 columns**, offering granular insights by year, state, sex, age group, and race. The mortality_rate and its confidence intervals are now properly scaled per 100,000 population. This tidy format allows for more efficient grouping and visualization by any combination of demographic or geographic variables.
 
 # National Trends Over Time
-## 1. Overall Mortality Rate (2000-2019)
+## 1. Overall Mortality Rate (2000–2019)
+
 ```{r}
 nat_trend <- lung_clean %>%
   group_by(year) %>%
@@ -127,10 +136,10 @@ ggplot(nat_trend, aes(x = year, y = mean_rate)) +
     x = "Year",
     y = "Deaths per 100,000 (Age-adjusted)"
   )
-
 ```
- 
- The national average lung cancer mortality rate decreased steadily from ~112 deaths per 100,000 in 2000 to ~82 deaths per 100,000 in 2019. This decline likely reflects reduced smoking prevalence, improved screening methods, and better treatments over the past two decades.
+
+The national average lung cancer mortality rate decreased steadily from ~112 deaths per 100,000 in 2000 to ~82 deaths per 100,000 in 2019.  
+This decline likely reflects reduced smoking prevalence, improved screening methods, and better treatments over the past two decades.
 
 ## 2. Mortality Trends By Sex
 ```{r}
@@ -293,4 +302,46 @@ American Indian and Alaska Native groups have the highest lung cancer mortality 
 
 
 
-  While all race groups exhibited a downward trend in lung cancer mortality over the study period, the Asian population in particular showed a relatively stagnant rate between 2000 and 2015. The American Indian and Alaska Native (AIAN) group experienced an increase in mortality rates from 2000 to 2005, followed by a steady decline; however, they consistently maintained the highest mortality rate among all race groups from 2005 to 2019. The Black population started with the highest mortality rate in 2000 but demonstrated the greatest improvement, with a consistent decrease throughout the period.
+  ## Conclusion
+
+This exploratory data analysis has revealed several critical patterns and disparities in lung cancer mortality in the United States from 2000 to 2019. Using a comprehensive, age-adjusted dataset sourced from the Institute for Health Metrics and Evaluation (IHME), we examined trends across time, demographic subgroups, and geographic regions. The insights drawn from this analysis have substantial implications for public health research, policy development, and future intervention strategies.
+
+### 1. National Mortality Trends
+
+One of the most striking findings is the nationwide decline in lung cancer mortality over the past two decades. From approximately 112 deaths per 100,000 people in 2000, the age-adjusted national average dropped to around 82 deaths per 100,000 by 2019—a reduction of over 25%. This decline reflects the culmination of long-term public health initiatives, such as anti-smoking campaigns, policy reforms like indoor smoking bans, improved early detection through screening, and advancements in treatment technologies such as immunotherapy and targeted therapies.
+
+However, while the national trend is encouraging, the decline has not been uniformly distributed across all population groups or geographic areas. This underscores the importance of disaggregating the data to uncover hidden inequities in progress.
+
+### 2. Disparities by Sex and Age
+
+When we stratify the mortality rates by sex, we find that men have consistently experienced significantly higher lung cancer mortality than women throughout the 20-year period. Male mortality began at over 150 deaths per 100,000 in 2000, decreasing to about 100 by 2019. In contrast, female mortality started lower and declined more gradually, with some stagnation observed between 2005 and 2010.
+
+These sex-based differences are likely rooted in historical smoking behavior, as men adopted and abandoned smoking earlier than women. Additionally, early public health messaging often targeted men more aggressively, while female smoking rates rose later in the 20th century and may have plateaued at different times depending on social and cultural factors. The slower decline in female mortality could also point to gaps in screening or treatment access for women in specific age or socioeconomic groups.
+
+In terms of age, older adults remain disproportionately affected. Individuals over 65 consistently showed the highest mortality rates, with some age groups exceeding 400 deaths per 100,000. Meanwhile, younger age groups (<50 years) exhibited much lower and relatively stable mortality trends. This reflects the latency period of lung cancer, which typically manifests after decades of exposure to risk factors like smoking or industrial pollutants. The improvements seen in older adults likely result from targeted screening programs such as low-dose CT scans and broader reductions in smoking among seniors.
+
+### 3. Geographic Inequities
+
+Our analysis also revealed stark geographic disparities in lung cancer mortality. States like Kentucky, West Virginia, and Mississippi consistently ranked among those with the highest rates—often exceeding 120 deaths per 100,000. These states are known for higher smoking prevalence, rural populations with limited access to healthcare, and socioeconomic challenges such as poverty and low education levels, all of which contribute to worse health outcomes.
+
+On the other end of the spectrum, states like Utah and Colorado demonstrated some of the lowest mortality rates. These regions benefit from strong public health systems, robust anti-smoking legislation, and generally healthier lifestyles. The geographic contrast suggests that state-level policy, economic conditions, and healthcare infrastructure play a substantial role in determining lung cancer outcomes.
+
+### 4. Racial and Ethnic Trends
+
+Racial disparities in lung cancer mortality present another crucial dimension. Our analysis found that the American Indian and Alaska Native (AIAN) populations experienced the highest mortality rates across the study period. Their rates rose initially between 2000 and 2005 and then gradually declined, but they remained the most impacted racial group from 2005 onward. This trend may reflect historical underinvestment in Native health services, higher smoking rates, and limited access to preventive care.
+
+Black Americans, who started with the highest mortality rate in 2000, showed one of the most dramatic improvements over the study period, approaching parity with other groups by 2019. This progress suggests that interventions targeting smoking cessation and lung health within Black communities may have begun to take effect. In contrast, Asian Americans consistently had the lowest mortality rates, which remained stable with only minor variation. This could be attributed to lower smoking prevalence and possibly genetic or environmental factors that warrant further investigation.
+
+While the general downward trend in all racial groups is a positive sign, the persistence of gaps between groups is a reminder that one-size-fits-all public health solutions are insufficient. Culturally tailored outreach, healthcare access expansion, and community-based interventions remain vital for addressing these inequities.
+
+### Final Reflections
+
+This exploratory project emphasizes the value of data disaggregation and visualization in identifying invisible disparities. While the overarching trend is one of improvement, the differences by sex, age, race, and location show that progress has not been uniform. In many ways, these findings mirror larger systemic issues in American healthcare, where demographic and regional factors heavily influence outcomes.
+
+Looking forward, our results suggest a few key areas for future attention:
+
+- Continued investment in tobacco prevention and cessation, particularly in high-risk populations and high-mortality states.
+- Targeted screening and early detection programs for seniors and underserved racial groups.
+- Policy support for equitable healthcare access, especially in rural and economically disadvantaged communities.
+
+By combining high-quality data with rigorous analysis, we can guide better decision-making and ultimately contribute to reducing the burden of preventable deaths from lung cancer across all populations in the United States.

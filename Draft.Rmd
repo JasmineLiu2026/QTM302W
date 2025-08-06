@@ -38,7 +38,7 @@ The data were sourced from multiple CSV files. After combining and cleaning them
 
 Our project focuses on trends in **lung cancer mortality** in the United States between **2000 and 2019**, with particular attention to **demographic disparities** and **state-level variation**. We use data from the **Institute for Health Metrics and Evaluation (IHME)**, which compiles cause-specific mortality estimates derived from population data and death certificates provided by the **National Center for Health Statistics (NCHS)**. These rates are **age-adjusted per 100,000 people**, allowing for meaningful comparisons over time and across population groups.
 
-We chose to study lung cancer for the following reaons:
+We chose to study lung cancer for the following reasons:
 
 - **Leading cause of cancer death**: Lung cancer remains the most deadly form of cancer in the U.S., surpassing deaths from breast, prostate, and colorectal cancers combined.
 - **Strong behavioral and environmental links**: Smoking remains the primary risk factor, but disparities in access to care, exposure to pollutants, and occupational risks also play a role.
@@ -53,7 +53,8 @@ library(tidyverse)
 library(janitor)
 library(skimr)
 library(GGally)
-
+install.packages("sandwich")
+library(sandwich)
 ```
 
 # Data Preprocessing
@@ -300,9 +301,63 @@ ggplot(race_trend, aes(x = year, y = mean_rate, color = race)) +
 
 American Indian and Alaska Native groups have the highest lung cancer mortality rates, which increased between 2000 and 2005 before declining. Black populations started with the highest rate in 2000 but achieved significant reductions, approaching parity with other races by 2019. Asian populations show relatively stable, low mortality, possibly due to lower historical smoking prevalence.
 
+## Regression Analysis
+```{r}
+
+# Filter out unnecessary age groups for our model
+lung_clean_filtered <- lung_clean %>%
+  filter(!age_group %in% c(
+    "<1 year", "1 to 4", "5 to 9", "10 to 14", "All Ages", 
+    "Age-standardized"
+  ))
+
+# Convert predictors to factors since they are categorical
+lung_clean_filtered$sex <- as.factor(lung_clean_filtered$sex)
+lung_clean_filtered$race <- as.factor(lung_clean_filtered$race)
+lung_clean_filtered$age_group <- as.factor(lung_clean_filtered$age_group)
+
+# Explicitly setting the reference level since R will by default, choose its reference based on alphabetical order
+lung_clean_filtered$age_group <- relevel(lung_clean_filtered$age_group, ref = "60 to 64")
+lung_clean_filtered$sex <- relevel(lung_clean_filtered$sex, ref = "Male")
+lung_clean_filtered$race <- relevel(lung_clean_filtered$race, ref = "White")
+```
+
+```{r}
+# This is our regression model
+model <- lm(mortality_rate ~ year + sex + race + age_group, data = lung_clean_filtered)
+
+summary(model)
+```
+We achieved a R-squared of 0.75, which means that about 75% of the variability in mortality rate is explained by the model. All of our predictors are statistically significant (p < 0.001), meaning they all show a meaningful relationship with mortality rate. 
+
+### Interpretation of Regression Result
+- Year: Each year, lung cancer mortality rate decreases by 2.19, holding all else constant.
+- Female: Females have about 78 fewer deaths per 100,000 than males, holding all else constant.
+- American Indian/Alaska Native: AIAN individuals have a 13.42 units higher mortality rate than white individuals.
+- Asian: Asians have a 76.82 units lower mortality rate than white individuals.
+- Black: Black individuals have a 9.87 units higher mortality rate than white individuals.
+- Latino: Latino individuals have a 89.85 units lower mortality rate than white individuals.
+- all younger age groups below our reference level of 60-64 shows lower mortality rate, while all older age groups above our reference level shows higher mortality rate.This aligns with expectations that lung cancer risk increases with age. 
 
 
-  ## Conclusion
+Temporal Trend: 
+
+Our model shows that mortality rates are declining over time, with approximately 2.19 reduction each year.
+
+Sex Differences:  
+
+Males continue to have a greater incidence of lung cancer compared to females, even when race, age group, and year are controlled. This observation aligns with the historical trends of lung cancer related to tobacco use; males have been more prone to smoking and occupational lung cancer risks.  
+
+Racial Disparities:  
+
+Latinos and Asians showed a significantly lower mortality rate compared to white individuals, whereas Blacks and AIAN groups have higher mortality rate compared to white individuals, holding all else constant.  
+
+Age Effect:  
+
+The pattern of the data confirms that the younger age group, controlling for other factors, contains the lowest mortality rates. On the other hand, the older age group shows higher mortality rates. This confirms the effect of a combination of biological factors and the long-term accumulation of risk factors in smoking.
+
+
+## Conclusion
 
 This exploratory data analysis has revealed several critical patterns and disparities in lung cancer mortality in the United States from 2000 to 2019. Using a comprehensive, age-adjusted dataset sourced from the Institute for Health Metrics and Evaluation (IHME), we examined trends across time, demographic subgroups, and geographic regions. The insights drawn from this analysis have substantial implications for public health research, policy development, and future intervention strategies.
 

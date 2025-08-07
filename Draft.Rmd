@@ -53,8 +53,6 @@ library(tidyverse)
 library(janitor)
 library(skimr)
 library(GGally)
-install.packages("sandwich")
-library(sandwich)
 ```
 
 # Data Preprocessing
@@ -301,6 +299,8 @@ ggplot(race_trend, aes(x = year, y = mean_rate, color = race)) +
 
 American Indian and Alaska Native groups have the highest lung cancer mortality rates, which increased between 2000 and 2005 before declining. Black populations started with the highest rate in 2000 but achieved significant reductions, approaching parity with other races by 2019. Asian populations show relatively stable, low mortality, possibly due to lower historical smoking prevalence.
 
+After confirming the disparities in mortality rates, we want to further investigate how much mortality rate is affected by these observed factors and whether these relationships are significant, which we perform a regression analysis below.  
+
 ## Regression Analysis
 ```{r}
 
@@ -322,15 +322,24 @@ lung_clean_filtered$sex <- relevel(lung_clean_filtered$sex, ref = "Male")
 lung_clean_filtered$race <- relevel(lung_clean_filtered$race, ref = "White")
 ```
 
+Here is our regression model with year, sex, race, and age group being the predictor variables, and mortality rate as response variable:
 ```{r}
-# This is our regression model
 model <- lm(mortality_rate ~ year + sex + race + age_group, data = lung_clean_filtered)
 
 summary(model)
 ```
 We achieved a R-squared of 0.75, which means that about 75% of the variability in mortality rate is explained by the model. All of our predictors are statistically significant (p < 0.001), meaning they all show a meaningful relationship with mortality rate. 
 
-### Interpretation of Regression Result
+We also performed a regression model without year. We expect the coefficients of these variables to shift if the disparities have changed over time. 
+
+```{r}
+model_2 <- lm(mortality_rate ~ sex + race + age_group, data = lung_clean_filtered)
+
+summary(model_2)
+```
+Here, we observe that the coefficients remained identical as Model 1 (with year). This means that the effects of sex, race, and age on lung cancer mortality are relatively stable over time. From this, we learned that the gap between males and females, or between races, is not narrowing or widening significantly from 2000 to 2019. This also indicates that year affects the overall mortality trend but not on the demographic gaps.
+
+### Interpretation of Regression Result on Model 1
 - Year: Each year, lung cancer mortality rate decreases by 2.19, holding all else constant.
 - Female: Females have about 78 fewer deaths per 100,000 than males, holding all else constant.
 - American Indian/Alaska Native: AIAN individuals have a 13.42 units higher mortality rate than white individuals.

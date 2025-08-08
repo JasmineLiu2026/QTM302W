@@ -5,46 +5,23 @@ output:
     df_print: paged
 ---
 
-# Introduction
 
 **Team Members**: Jasmine, Vasant, Chenglang
 
-This notebook performs an exploratory data analysis (EDA) on lung cancer incidence data in the United States, covering the years **2000 to 2019**.  
-The lung cancer mortality data were downloaded from **https://ghdx.healthdata.org/record/ihme-data/us-lung-cancer-county-race-ethnicity-2000-2019**, including all 50 U.S. states plus DC. “Mortality rate” refers to the age-adjusted number of deaths per 100,000 residents; these estimates were generated using population and deaths data from the National Center for Health Statistics.
+# Introduction
+This notebook performs an exploratory data analysis (EDA) on lung cancer mortlity data in the United States, covering the years **2000 to 2019**.  
+This data were downloaded from **https://ghdx.healthdata.org/record/ihme-data/us-lung-cancer-county-race-ethnicity-2000-2019**.
+Our notebook explores patterns and disparities in lung cancer mortality across the United States from 2000 to 2019. We will begin by introducing the dataset and its key variables, then examine national trends on each variables, and finally investigate demographic and geographic disparities over time.
 
-This analysis addresses the following questions:
+# Dataset and Motivation
+Currently, there are more than 100 types of cancers around the world. Of all, lung cancer has been the first and most diagnosed cancer. It became a threat to public health worldwide. By 2020, there were nearly 2 million cases related to lung cancer deaths. (Tesfaw et al.). While screenings such as low-dose computed tomography can significantly reduce lung cancer mortality, access to these screenings remains unevenly distributed and often limited, especially for vulnerable populations. The barriers to screening include a lack of awareness about risk factors, financial constraints, and geographic limitations. Existing studies has shown that lung cancer is often correlated to comorbid conditions (e.g. hypertension, diabetes), and behavioral and environmental links. While disparities in cancer has been systematically studied, not many existing literature discussed how these disparities have shifted throughout time. 
 
-1. Describe **temporal trends** in lung cancer mortality nationally.
-2. Examine **demographic disparities** across **sex**, **age**, and **race**.
-3. Identify **geographic variation** in lung cancer outcomes by **state**.
+This dataset includes the year of observation, state, sex, age group, race, and the mortality rate (deaths per 100,000 residents). By analyzing these variables together, we can track how lung cancer mortality has changed over time in the US, compare rates between men and women, examine differences among racial and age groups, and identify geographic patterns across states. This not only enable us to explore the national trends, but also disparities that may exist between different populations and regions.
 
-The data were sourced from multiple CSV files. After combining and cleaning them, we analyze the structure, summarize key variables, and visualize trends.
-
-### Variable Descriptions
-
-| **Variable Name** | **Description** |
-|-------------------|-----------------|
-| `year`            | Calendar year of the observation (2000–2019). |
-| `state`        | U.S. state or jurisdiction where the mortality rate was recorded. |
-| `sex`             | Biological sex of the population group (`Male`, `Female`). |
-| `age_group`       | Age group category (e.g., `15–49 years`, `65+ years`). |
-| `race`            | Racial or ethnic group (e.g., `White`, `Black or African American`). |
-| `metric`          | Type of metric used for the mortality estimate. |
-| `value`           | Age-adjusted lung cancer mortality rate (deaths per 100,000 population). |
-| `lower_ci`        | Lower bound of the 95% confidence interval for the mortality rate. |
-| `upper_ci`        | Upper bound of the 95% confidence interval for the mortality rate. |
-
-### Research Interest
-
-Our project focuses on trends in **lung cancer mortality** in the United States between **2000 and 2019**, with particular attention to **demographic disparities** and **state-level variation**. We use data from the **Institute for Health Metrics and Evaluation (IHME)**, which compiles cause-specific mortality estimates derived from population data and death certificates provided by the **National Center for Health Statistics (NCHS)**. These rates are **age-adjusted per 100,000 people**, allowing for meaningful comparisons over time and across population groups.
-
-We chose to study lung cancer for the following reasons:
-
-- **Leading cause of cancer death**: Lung cancer remains the most deadly form of cancer in the U.S., surpassing deaths from breast, prostate, and colorectal cancers combined.
-- **Strong behavioral and environmental links**: Smoking remains the primary risk factor, but disparities in access to care, exposure to pollutants, and occupational risks also play a role.
-- **Clear patterns across states and subgroups**: Lung cancer mortality shows variation by **sex**, **age**, **race/ethnicity**, and **geography**, making it a useful case for studying public health inequality and policy impacts.
-
-Our research aims to understand how lung cancer mortality has changed over two decades and to identify the **subpopulations or regions most at risk**. In doing so, we hope to inform future public health strategies aimed at **reducing preventable deaths**, particularly in states or demographic groups that have not benefited equally from smoking cessation campaigns, early detection, or advances in treatment.
+With the variables in our current dataset, we aim to address the following questions:
+1. How have lung cancer mortality rates changed nationally over the past two decades?
+2. What disparities exist across sex, age, and race?
+3. How have these disparities shifted over time?
 
 
 # Package Set Up
@@ -55,7 +32,7 @@ library(skimr)
 library(GGally)
 ```
 
-# Data Preprocessing
+# Forming our Dataset
 ```{r message=FALSE, warning=FALSE}
 # Combining all yearly CSV files together (all csv file have the exact same data structure, varied by year)
 male_files <- list.files("data/male", pattern = "\\.csv$", full.names = TRUE, ignore.case = TRUE)
@@ -79,8 +56,8 @@ glimpse(lung_cancer_df)
 ```
 The raw dataset contains over 16 million rows and 19 columns, indicating a highly detailed breakdown by sex, race, age, and geography over time. Most columns like sex_name, race_name, age_name, and location_name will need cleaning or renaming for easier analysis. Additionally, the mortality rates are stored under val, with corresponding confidence intervals in lower and upper.
 
-## Clean and Structure Data
-
+## Data Preprocessing
+Before getting started on our analysis, we begin with data preprocessing to make sure our data is organized and cleaned. We normalized the mortality rate to better visualize this data when plotted. The state names were also extracted to form the new state varaible. In addition, msissing values are dropped from the dataset.
 ```{r}
 # Clean and Structure Data
 lung_clean <- lung_cancer_df %>%
@@ -110,14 +87,13 @@ colSums(is.na(lung_clean))
 unique(lung_clean$state)
 ```
 
-This section cleans and structures the dataset for analysis. The code extracts proper state names, renames variables for clarity, and creates normalized mortality rates per 100,000 residents. It also filters out national-level data to focus on state-level variation. Checking for missing values and verifying state names ensures the dataset is ready for accurate visualizations and statistical summaries.
 
-
+After cleaning, the new dataset contains approximately **9 million rows** and **8 columns**.
 ```{r}
 # Preview of Cleaned Data
 glimpse(lung_clean)
 ```
-After cleaning, the dataset contains approximately **9 million rows** and **8 columns**, offering granular insights by year, state, sex, age group, and race. The mortality_rate and its confidence intervals are now properly scaled per 100,000 population. This tidy format allows for more efficient grouping and visualization by any combination of demographic or geographic variables.
+
 
 # National Trends Over Time
 ## 1. Overall Mortality Rate (2000–2019)

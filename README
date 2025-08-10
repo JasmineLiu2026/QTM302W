@@ -59,7 +59,7 @@ Racial Disparities:
   Highest: American Indian/Alaska Native
   Lowest: Asian
 Black mortality dropped sharply, nearing parity with Whites by 2019.
-Regression: Yearly mortality drops about 2.19 per 100000 people, also demographic effects stable over time.
+Regression: Yearly mortality drops about 2.19 per 100000 people, also demographic effects are stable over time.
 
 ## Potential Next Steps / Future Directions  
 - Incorporate state-level predictors like smoking prevalence and access to healthcare into regression models. 
@@ -75,4 +75,16 @@ Regression: Yearly mortality drops about 2.19 per 100000 people, also demographi
   install.packages("renv")
   renv::restore()
 5. The project file QTM302W.Rproj can be opened directly in RStudio to view the complete project.
+
+## Directory Structure
+QTM302W/
+├── data/
+├── renv/
+├── .gitattributes
+├── .gitignore
+├── EDA.Rmd
+├── QTM302W.Rproj
+├── README.md
+├── lung_mortality.gif
+└── renv.lock
 

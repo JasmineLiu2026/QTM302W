@@ -6,12 +6,27 @@
 - Chenglang Wang – Emory University, QTM 302W  
 
 ## Overview/Objectives:
-This project analyzes lung cancer mortality trends in the United States from 2000 to 2019 using data from the IHME Global Burden of Disease Study.
+This project analyzes lung cancer mortality trends in the United States from 2000 to 2019, utilizing data from the IHME Global Burden of Disease Study.
 We explore national patterns, demographic disparities, geographic differences, and how these have evolved over two decades.
+
+## Methods Used  
+- Data cleaning (tidyverse, janitor)  
+- Exploratory data analysis 
+- Visualization of trends with ggplot2 and animated U.S. maps via gganimate
+- Statistical modeling with linear regression to assess predictors of mortality
 
 ## Platforms/Languages  
 - R, RStudio  
 - GitHub for version control and collaboration
+
+## Project Description  
+Lung cancer is one of the leading causes of cancer-related deaths in the United States. While overall mortality rates have decreased over the last two decades, there are persistent disparities across certain demographic groups and regions.  
+
+This analysis investigates:
+1. National trends in lung cancer mortality over time.  
+2. Demographic disparities by age, sex, and race.  
+3. Geographic variation by state.  
+4. Whether these disparities have changed over time, using regression models that both include and exclude year.
 
 ## Dataset:
 Source: IHME – U.S. Lung Cancer Mortality from 2000 to 2019
@@ -22,19 +37,11 @@ Key Variables: year, state, sex, age_group, race, mortality_rate
 
 
 ## Research Questions:
-How have national mortality rates changed over time?
+How have lung cancer national mortality rates changed from 2000 to 2019?
 
 How do rates differ by sex, age, race, and state?
 
 Have disparities narrowed or persisted?
-
-
-## Methods:
-Data cleaning using tidyverse and janitor.
-
-Visualization of trends with ggplot2 and animated U.S. maps via gganimate.
-
-Statistical modeling with linear regression to assess predictors of mortality.
 
 
 ## Key Findings:

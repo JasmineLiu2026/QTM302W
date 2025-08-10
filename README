@@ -7,7 +7,7 @@
 
 ## Overview/Objectives:
 This project analyzes lung cancer mortality trends in the United States from 2000 to 2019, utilizing data from the IHME Global Burden of Disease Study.
-We explore national patterns, demographic disparities, geographic differences, and how these have evolved over two decades.
+We explored national patterns, demographic disparities, geographic differences, and how these have evolved over two decades.
 
 ## Methods Used  
 - Data cleaning (tidyverse, janitor)  
@@ -17,10 +17,10 @@ We explore national patterns, demographic disparities, geographic differences, a
 
 ## Platforms/Languages  
 - R, RStudio  
-- GitHub for version control and collaboration
+- GitHub
 
 ## Project Description  
-Lung cancer is one of the leading causes of cancer-related deaths in the United States. While overall mortality rates have decreased over the last two decades, there are persistent disparities across certain demographic groups and regions.  
+Lung cancer is one of the leading causes of cancer-related deaths in the United States. While overall mortality rates have decreased over the past two decades, there are persistent disparities across certain demographic groups and regions.  
 
 This analysis investigates:
 1. National trends in lung cancer mortality over time.  
@@ -30,39 +30,49 @@ This analysis investigates:
 
 ## Dataset:
 Source: IHME – U.S. Lung Cancer Mortality from 2000 to 2019
-
 Observations: about 9 million after cleaning
-
 Key Variables: year, state, sex, age_group, race, mortality_rate
-
 
 ## Research Questions:
 How have lung cancer national mortality rates changed from 2000 to 2019?
-
 How do rates differ by sex, age, race, and state?
-
 Have disparities narrowed or persisted?
 
+## Models and Visualization Techniques  
+- Regression models:
+  - Model 1: Mortality rate ~ demographic variables + year.  
+  - Model 2: Mortality rate ~ demographic variables (no year).  
+- Visualization:  
+  - Line graphs for trends over time.  
+  - Animated U.S. choropleth maps to show state-level mortality changes.  
+  - Comparative bar plots for demographic disparities.
+
+## Challenges Faced
+Add Challenges
 
 ## Key Findings:
-National Decline: Mortality fell around 25% which decline from 112 to 82 per 100000 people from 2000 to 2019.
-
-Sex Disparities: Males had higher rates than females. Both  gender declined, but female decline slower.
-
-Age Patterns: Highest mortality in 65 and higher age. Under 50 remained low and stable.
-
-State Differences: Highest in KY, WV, MS and lowest in UT, CO.
-
+National Decline: Mortality fell around 25%, declining from 112 to 82 per 100000 people from 2000 to 2019.
+Sex Disparities: Males had higher rates than females. Both genders declined, but females declined more slowly.
+Age Patterns: Highest mortality in 65-year-olds and older. Under 50-year-olds remained low and stable.
+State Differences: Highest in KY, WV, MS, and lowest in UT, CO.
 Racial Disparities:
-
   Highest: American Indian/Alaska Native
-
   Lowest: Asian
-
-  Black mortality dropped sharply, nearing parity with Whites by 2019.
-
+Black mortality dropped sharply, nearing parity with Whites by 2019.
 Regression: Yearly mortality drops about 2.19 per 100000 people, also demographic effects stable over time.
 
-## Conclusion:
+## Potential Next Steps / Future Directions  
+- Incorporate state-level predictors like smoking prevalence and access to healthcare into regression models. 
 
-PLEASE conclude our research
+## Getting Started
+
+1. Clone the repository:  
+   git clone https://github.com/JasmineLiu2026/QTM302W.git
+   cd QTM302W
+2. The raw data is stored in the data folder within this repository.
+3. The main analysis is in EDA.Rmd. Open this file in RStudio to view the exploratory data analysis and visualizations.
+4. Project dependencies are managed using renv. To replicate the computing environment:
+  install.packages("renv")
+  renv::restore()
+5. The project file QTM302W.Rproj can be opened directly in RStudio to view the complete project.
+

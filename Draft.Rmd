@@ -11,14 +11,14 @@ output:
 # Introduction
 This notebook performs an exploratory data analysis (EDA) on lung cancer mortlity data in the United States, covering the years **2000 to 2019**.  
 This data were downloaded from **https://ghdx.healthdata.org/record/ihme-data/us-lung-cancer-county-race-ethnicity-2000-2019**.
-Our notebook explores patterns and disparities in lung cancer mortality across the United States from 2000 to 2019. We will begin by introducing the dataset and its key variables, then examine national trends on each variables, and finally investigate demographic and geographic disparities over time.
+Our notebook explores patterns and disparities in lung cancer mortality across the United States from 2000 to 2019. This data originates from the Global Burden of Disease (GBD) study, with the most recent data published for 2019. We chose not to incorporate other datasets because this source alone contains over 19 million records, which provides sufficient coverage for our analysis. We will begin by introducing the dataset and its key variables, then examine national trends on each variables, and finally investigate demographic and geographic disparities over time.
 
 # Dataset and Motivation
-Currently, there are more than 100 types of cancers around the world. Of all, lung cancer has been the first and most diagnosed cancer. It became a threat to public health worldwide. By 2020, there were nearly 2 million cases related to lung cancer deaths. (Tesfaw et al.). While screenings such as low-dose computed tomography can significantly reduce lung cancer mortality, access to these screenings remains unevenly distributed and often limited, especially for vulnerable populations. The barriers to screening include a lack of awareness about risk factors, financial constraints, and geographic limitations. Existing studies has shown that lung cancer is often correlated to comorbid conditions (e.g. hypertension, diabetes), and behavioral and environmental links. While disparities in cancer has been systematically studied, not many existing literature discussed how these disparities have shifted throughout time. 
+Currently, there are more than 100 types of cancers around the world. Of all, lung cancer has been the first and most diagnosed cancer. It became a threat to public health worldwide. By 2020, there were nearly 2 million cases related to lung cancer deaths. (Tesfaw et al.). While screenings such as low-dose computed tomography can significantly reduce lung cancer mortality, access to these screenings remains unevenly distributed and often limited, especially for vulnerable populations. The barriers to screening include a lack of awareness about risk factors, financial constraints, and geographic limitations. Previous studies have shown that lung cancer outcomes are linked to comorbid conditions (e.g., hypertension, diabetes), as well as behavioral and environmental factors. Although disparities in cancer outcomes have been widely studied, there is limited literature examining how these disparities have evolved over time.
 
-This dataset includes the year of observation, state, sex, age group, race, and the mortality rate (deaths per 100,000 residents). By analyzing these variables together, we can track how lung cancer mortality has changed over time in the US, compare rates between men and women, examine differences among racial and age groups, and identify geographic patterns across states. This not only enable us to explore the national trends, but also disparities that may exist between different populations and regions.
+Our dataset includes these varaibles: year of observation, state, sex, age group, race, and the mortality rate (deaths per 100,000 residents). By analyzing these variables, we can track how lung cancer mortality has changed over time in the US, compare rates between men and women, examine differences among racial and age groups, and identify geographic patterns across states. This not only enable us to explore the national trends, but also disparities that may exist between different populations and regions, which ultimately helps inform targeted population and suggests public health strategies or interventions.
 
-With the variables in our current dataset, we aim to address the following questions:
+In summary, with the variables in our current dataset, we aim to address the following questions:
 1. How have lung cancer mortality rates changed nationally over the past two decades?
 2. What disparities exist across sex, age, and race?
 3. How have these disparities shifted over time?
@@ -54,10 +54,10 @@ lung_cancer_df <- bind_rows(male_data, female_data)
 ```{r}
 glimpse(lung_cancer_df)
 ```
-The raw dataset contains over 16 million rows and 19 columns, indicating a highly detailed breakdown by sex, race, age, and geography over time. Most columns like sex_name, race_name, age_name, and location_name will need cleaning or renaming for easier analysis. Additionally, the mortality rates are stored under val, with corresponding confidence intervals in lower and upper.
+Our dataset contains over 16 million rows and 19 columns. We will clean the data to extract the variables relevant to our analysis and rename them to be more descriptive. The val column contains our primary variable of interest: the mortality rate.
 
 ## Data Preprocessing
-Before getting started on our analysis, we begin with data preprocessing to make sure our data is organized and cleaned. We normalized the mortality rate to better visualize this data when plotted. The state names were also extracted to form the new state varaible. In addition, msissing values are dropped from the dataset.
+Before starting our analysis, we performed data preprocessing to ensure the dataset was organized and clean. The mortality rate was normalized to improve visualization, state names were extracted to create a new state variable, and missing values were removed.
 ```{r}
 # Clean and Structure Data
 lung_clean <- lung_cancer_df %>%
@@ -77,8 +77,6 @@ lung_clean <- lung_cancer_df %>%
     age_group = age_name,
     race = race_name,
     mortality_rate,
-    lower_ci,
-    upper_ci
   ) %>%
   filter(!is.na(mortality_rate), state != "United States of America")
 
@@ -87,17 +85,15 @@ colSums(is.na(lung_clean))
 unique(lung_clean$state)
 ```
 
-
-After cleaning, the new dataset contains approximately **9 million rows** and **8 columns**.
+After cleaning, the new dataset for our analysis contains approximately 9 million rows and 8 columns.
 ```{r}
 # Preview of Cleaned Data
 glimpse(lung_clean)
 ```
 
-
 # National Trends Over Time
 ## 1. Overall Mortality Rate (2000–2019)
-
+Using the cleaned data, we examine how has morality rate change over years. We created a line plot to visualize this.
 ```{r}
 nat_trend <- lung_clean %>%
   group_by(year) %>%
@@ -112,9 +108,9 @@ ggplot(nat_trend, aes(x = year, y = mean_rate)) +
     y = "Deaths per 100,000 (Age-adjusted)"
   )
 ```
+From this graph, we observe a downward trend of the national mortality rate. The number of death has decreased steadily from ~112 deaths per 100,000 in 2000 to ~82 deaths per 100,000 in 2019. Efforts to increase early-prevention measures such as low-dose computed tomography (LDCT) screenig and better treatments over the past two decades likely contributed to this decline.
 
-The national average lung cancer mortality rate decreased steadily from ~112 deaths per 100,000 in 2000 to ~82 deaths per 100,000 in 2019.  
-This decline likely reflects reduced smoking prevalence, improved screening methods, and better treatments over the past two decades.
+Building on the national trend, next we want to examine how mortality rates have differed between men and women over time to assess whether these overall declines have been experienced equally across sexes.
 
 ## 2. Mortality Trends By Sex
 ```{r}
@@ -132,12 +128,10 @@ ggplot(sex_trend, aes(x = year, y = rate, color = sex)) +
     color = "Sex"
   )
 
-
 ```
-  
-  Males have consistently higher mortality rates compared to females, with rates falling from ~150 to ~100 deaths per 100,000.Females saw a much slower decline, with their curve flattening between 2005 and 2010. This may suggest that tobacco cessation and health campaigns initially targeted men more effectively or that historical smoking rates among women lagged behind men.
+In this graph, we observe that males consistently have higher mortality rates than females, with rates declining from approximately 150 to 100 deaths per 100,000. On the other hand, females experienced a slower decline, with their rates leveling off between 2005 and 2010. This pattern may reflect the differences in risk factors, exposure, or access to screening and treatment between sexes over time.
 
-
+In addition, we explore how lung cancer mortality rates vary across different age groups to better understand which populations are most affected and how these trends have changed over time.
 ## 3. Mortality Trends By Age Group
 ```{r}
 age_trend <- lung_clean %>%
@@ -156,8 +150,9 @@ ggplot(age_trend, aes(x = year, y = mean_rate, color = age_group)) +
 
 
 ```
+Looking at the pink lines, older age groups show significantly higher mortality rates, exceeding 400 deaths per 100,000. In contrast, younger groups (under 50 years) maintain low and nearly flat rates. This indicates that lung cancer predominantly affects older adults, which align with existing studies. The decline observed in older age groups likely reflects improvements in screening and treatment, as well as the cumulative impact of reduced risk factors over time. 
 
-Older groups show much higher mortality, exceeding 400 deaths per 100,000. Younger age groups (<50 years) maintain low and nearly flat rates, indicating that lung cancer remains predominantly an illness affecting older adults. The decline in older age groups suggests improvements in screening and treatment for seniors, as well as the cumulative effect of reduced smoking over time.
+Beyond examining mortality trends by age group, we are also curious whether lung cancer mortality rates vary across different states and how it has changed over the past two decades.
 
 ## 4. State_Level Mortality During Two Decades
 ```{r}

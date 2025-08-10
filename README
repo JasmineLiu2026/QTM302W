@@ -1,0 +1,53 @@
+Exploratory Data Analysis about Lung Cancer Mortality in the U.S. from 2000 to 2019
+
+
+Overview:::
+This project analyzes lung cancer mortality trends in the United States from 2000 to 2019 using data from the IHME Global Burden of Disease Study.
+We explore national patterns, demographic disparities, geographic differences, and how these have evolved over two decades.
+
+Dataset:::
+Source: IHME – U.S. Lung Cancer Mortality from 2000 to 2019
+
+Observations: about 9 million after cleaning
+
+Key Variables: year, state, sex, age_group, race, mortality_rate
+
+
+Research Questions:::
+How have national mortality rates changed over time?
+
+How do rates differ by sex, age, race, and state?
+
+Have disparities narrowed or persisted?
+
+
+Methods:::
+Data cleaning using tidyverse and janitor.
+
+Visualization of trends with ggplot2 and animated U.S. maps via gganimate.
+
+Statistical modeling with linear regression to assess predictors of mortality.
+
+
+Key Findings:::
+National Decline: Mortality fell around 25% which decline from 112 to 82 per 100000 people from 2000 to 2019.
+
+Sex Disparities: Males had higher rates than females. Both  gender declined, but female decline slower.
+
+Age Patterns: Highest mortality in 65 and higher age. Under 50 remained low and stable.
+
+State Differences: Highest in KY, WV, MS and lowest in UT, CO.
+
+Racial Disparities:
+
+  Highest: American Indian/Alaska Native
+
+  Lowest: Asian
+
+  Black mortality dropped sharply, nearing parity with Whites by 2019.
+
+Regression: Yearly mortality drops about 2.19 per 100000 people, also demographic effects stable over time.
+
+Conclusion:::
+
+PLEASE conclude our research

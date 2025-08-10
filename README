@@ -5,9 +5,13 @@
 - Jasmine Liu – Emory University, QTM 302W  
 - Chenglang Wang – Emory University, QTM 302W  
 
-## Overview:
+## Overview/Objectives:
 This project analyzes lung cancer mortality trends in the United States from 2000 to 2019 using data from the IHME Global Burden of Disease Study.
 We explore national patterns, demographic disparities, geographic differences, and how these have evolved over two decades.
+
+## Platforms/Languages  
+- R, RStudio  
+- GitHub for version control and collaboration
 
 ## Dataset:
 Source: IHME – U.S. Lung Cancer Mortality from 2000 to 2019

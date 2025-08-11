@@ -48,7 +48,7 @@ Have disparities narrowed or persisted?
   - Comparative bar plots for demographic disparities.
 
 ## Challenges Faced
-Add Challenges
+One of our challenges, as a limitation for our analysis, was the dataset's lack of direct information on critical risk factors such as smoking status, healthcare access, etc., which limited our ability to explain disparities in full detail. Another limitation was that the data only extended through 2019, meaning changes due to recent policies were not accounted for. We also did not incorporate state-level variation into our regression, which could have provided further insights. 
 
 ## Key Findings:
 National Decline: Mortality fell around 25%, declining from 112 to 82 per 100000 people from 2000 to 2019.

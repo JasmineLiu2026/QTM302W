@@ -318,7 +318,7 @@ From this model, we observe that the coefficients remained identical as Model 1 
 - Asian: Asians have a 76.82 units lower mortality rate than white individuals.
 - Black: Black individuals have a 9.87 units higher mortality rate than white individuals.
 - Latino: Latino individuals have a 89.85 units lower mortality rate than white individuals.
-- all younger age groups below our reference level of 60-64 shows lower mortality rate, while all older age groups above our reference level shows higher mortality rate.This aligns with expectations that lung cancer risk increases with age. 
+- all younger age groups below our reference level of 60-64 shows lower mortality rate, while all older age groups above our reference level shows higher mortality rate. This aligns with expectations that lung cancer risk increases with age. 
 
 Temporal Trend: Our model shows that mortality rates are declining over time, with approximately 2.19 reduction each year.
 
@@ -330,14 +330,9 @@ Age Effect: The pattern of the data confirms that the younger age group, control
 ## Conclusion
 Our exploratory data analysis has revealed several critical patterns and disparities in lung cancer mortality in the United States from 2000 to 2019. In our analysis, we examined trends across time, demographic subgroups, and geographic regions. Using descriptive trends and a multivariable linear regression model, we also quantified the independent impact of these factors while controlling for others. We hope the insights drawn from this analysis contribute to further public health research, policy development, and future intervention strategies.
 
-Looking forward, our results suggest a few key areas for future attention:
-
-- Continued investment in tobacco prevention and cessation, particularly in high-risk populations and high-mortality states such as Kentucky, West Virginia, Mississippi, and Maine.
-- Targeted screening and early detection programs for seniors and underserved racial groups, especially American Indian/Alaska Native and Black communities who experience disproportionately high lung cancer mortality.
-- Collaborate with community organizations to raise awareness about lung cancer risks, symptoms, and the importance of screening.
-- Implement policies that reduce socioeconomic inequities, improve environmental conditions (e.g., air quality), and support healthy living environments.
-
 Our study has some limitations that can be further improved and addressed. Due to the nature of the dataset, it lacks direct information on key risk factors such as smoking status, occupational exposures, or access to healthcare, which could further explain disparities. Additionally, since the data extends only up to 2019, recent trends and the effects of newer interventions or policies are not reflected.
 
 Ultimately, a coordinated effort combining research, policy, and community engagement is essential to shorten the lung cancer mortality gap and promote equitable health for everyone, regardless of their race, gender, or age. We look forward to building on this EDA analysis by investigating the underlying, specific drivers of these disparities, evaluating the effectiveness of targeted interventions, and leveraging more recent and external data to achieve this.
+
+Our next steps will focus on expanding our analysis by adding state-level predictors into the regression model in order to gauge how mortality disparity is affected by geography. We also plan to integrate smoking prevalence, air quality, and healthcare access datasets to investigate the underlying causes of these disparities. Finally, we want to include data after 2019 to capture the effects of recent public health policies.
 

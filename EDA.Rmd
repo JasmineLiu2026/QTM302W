@@ -243,9 +243,9 @@ ggplot(state_2019, aes(x = reorder(state, rate), y = rate)) +
   )
 ```
 
-From the above graphs, Kentucky, West Virginia, Maine, and Mississippi are among the states with the highest mortality rates (>120 deaths per 100,000). These states historically have high smoking prevalence and potentially limited access to healthcare, which can contribute to the higher mortality rates. Utah and Colorado show the lowest rates, likely due to lower smoking rates and stronger public health measures. These states are also known for benefit from strong public health systems, robust anti-smoking legislation, and generally healthier lifestyles. The geographic contrast suggests that state-level policy, economic conditions, and healthcare infrastructure play a substantial role in determining lung cancer outcomes.
+From the above graphs, Kentucky, West Virginia, Maine, and Mississippi are among the states with the highest mortality rates (>120 deaths per 100,000), likely due to high smoking prevalence and potentially limited access to healthcare, which can contribute to the higher mortality rates. Utah shows the lowest rates, likely due to lower smoking rates and stronger public health measures.  The geographic contrast suggests that state-level policy, economic conditions, and healthcare infrastructure play a substantial role in determining lung cancer outcomes.
 
-While geographic differences highlight the influence of local policies, healthcare access, and environmental exposures, they do not fully explain the disparities in lung cancer outcomes. Race and ethnicity can also play a critical role as behavioral, gen. In the following graphs, we group our data by race and plot throughout the years to further investigate these differences.
+While geographic differences highlight the influence of local policies, healthcare access, and environmental exposures, they do not fully explain the disparities in lung cancer outcomes. Race and ethnicity can also play a critical role. In the following graphs, we group our data by race and plot it throughout the years to further investigate these differences.
 
 ```{r}
 race_trend <- lung_clean %>%
